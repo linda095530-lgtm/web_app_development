@@ -1,0 +1,7 @@
+theme: jekyll-theme-primer
+exclude:
+  - app/
+  - database/
+  - instance/
+  - venv/
+  - env/
