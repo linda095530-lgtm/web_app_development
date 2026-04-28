@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>考古題收藏系統</title>
+  <meta name="description" content="集中管理、分類明確、搜尋便利的大學考古題資料庫">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static_site/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a class="navbar-brand" href="#/">📚 考古題收藏系統</a>
+    <div class="nav-links">
+      <a href="#/subjects">📖 科目</a>
+      <a href="#/professors">👤 教授</a>
+      <a href="#/exams">📝 考古題</a>
+    </div>
+    <div class="nav-search">
+      <input type="text" id="nav-q" placeholder="搜尋考古題..." onkeydown="if(event.key==='Enter')navSearch()">
+      <button onclick="navSearch()">🔍</button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="app"></main>
+
+  <footer class="footer">
+    📚 考古題收藏系統 © 2026 — 使用 HTML + CSS + JavaScript 建置
+  </footer>
+
+  <script src="static_site/db.js"></script>
+  <script src="static_site/pages.js"></script>
+  <script src="static_site/app.js"></script>
+</body>
+</html>
