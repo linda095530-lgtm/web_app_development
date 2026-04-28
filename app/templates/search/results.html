@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}搜尋結果 — 考古題收藏系統{% endblock %}
+{% block content %}
+<h1 class="fw-bold mb-4"><i class="bi bi-search me-2"></i>搜尋考古題</h1>
+
+<!-- 搜尋表單 -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small fw-medium">關鍵字</label>
+                <input type="text" class="form-control" name="q" value="{{ keyword }}" placeholder="輸入關鍵字搜尋...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">科目</label>
+                <select class="form-select form-select-sm" name="subject_id">
+                    <option value="">全部</option>
+                    {% for s in subjects %}
+                    <option value="{{ s.id }}" {{ 'selected' if selected_subject == s.id }}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">教授</label>
+                <select class="form-select form-select-sm" name="professor_id">
+                    <option value="">全部</option>
+                    {% for p in professors %}
+                    <option value="{{ p.id }}" {{ 'selected' if selected_professor == p.id }}>{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-medium">學年度</label>
+                <select class="form-select form-select-sm" name="year">
+                    <option value="">全部</option>
+                    {% for y in years %}
+                    <option value="{{ y }}" {{ 'selected' if selected_year == y }}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-search me-1"></i>搜尋</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if keyword %}
+<p class="text-muted">搜尋「<strong>{{ keyword }}</strong>」，找到 {{ results|length }} 筆結果</p>
+{% endif %}
+
+{% if results %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr><th>標題</th><th>科目</th><th>教授</th><th>學年度</th><th>考試類型</th></tr>
+        </thead>
+        <tbody>
+            {% for exam in results %}
+            <tr>
+                <td><a href="{{ url_for('exams.detail_exam', id=exam.id) }}" class="text-decoration-none fw-medium">{{ exam.title }}</a></td>
+                <td><span class="badge bg-primary">{{ exam.subject_name }}</span></td>
+                <td>{{ exam.professor_name }}</td>
+                <td>{{ exam.year }}-{{ exam.semester }}</td>
+                <td><span class="badge bg-secondary">{{ exam.exam_type }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% elif keyword %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-emoji-frown display-1"></i>
+    <p class="mt-3 fs-5">找不到符合「{{ keyword }}」的考古題</p>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-search display-1"></i>
+    <p class="mt-3 fs-5">輸入關鍵字開始搜尋</p>
+</div>
+{% endif %}
+{% endblock %}

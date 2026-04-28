@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ '編輯科目' if subject else '新增科目' }} — 考古題收藏系統{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <h1 class="fw-bold mb-4">
+            <i class="bi bi-{{ 'pencil' if subject else 'plus-circle' }} me-2"></i>
+            {{ '編輯科目' if subject else '新增科目' }}
+        </h1>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-medium">科目名稱 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{{ subject.name if subject else '' }}"
+                               placeholder="例如：微積分、線性代數" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-medium">科目描述</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  placeholder="選填，簡短描述此科目">{{ subject.description if subject else '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>{{ '更新' if subject else '新增' }}
+                        </button>
+                        <a href="{{ url_for('subjects.list_subjects') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i>取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

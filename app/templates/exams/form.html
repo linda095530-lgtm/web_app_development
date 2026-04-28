@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ '編輯考古題' if exam else '新增考古題' }} — 考古題收藏系統{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <h1 class="fw-bold mb-4">
+            <i class="bi bi-{{ 'pencil' if exam else 'plus-circle' }} me-2"></i>
+            {{ '編輯考古題' if exam else '新增考古題' }}
+        </h1>
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-medium">標題 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ exam.title if exam else '' }}" placeholder="例如：113-1 微積分期中考" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="subject_id" class="form-label fw-medium">科目 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="subject_id" name="subject_id" required>
+                                <option value="">-- 請選擇 --</option>
+                                {% for s in subjects %}
+                                <option value="{{ s.id }}" {{ 'selected' if exam and exam.subject_id == s.id }}>{{ s.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="professor_id" class="form-label fw-medium">教授 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="professor_id" name="professor_id" required>
+                                <option value="">-- 請選擇 --</option>
+                                {% for p in professors %}
+                                <option value="{{ p.id }}" {{ 'selected' if exam and exam.professor_id == p.id }}>{{ p.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="year" class="form-label fw-medium">學年度 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="year" name="year" value="{{ exam.year if exam else '' }}" placeholder="例如：113" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="semester" class="form-label fw-medium">學期 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="semester" name="semester" required>
+                                <option value="">-- 請選擇 --</option>
+                                <option value="1" {{ 'selected' if exam and exam.semester == '1' }}>上學期 (1)</option>
+                                <option value="2" {{ 'selected' if exam and exam.semester == '2' }}>下學期 (2)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exam_type" class="form-label fw-medium">考試類型 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="exam_type" name="exam_type" required>
+                                <option value="">-- 請選擇 --</option>
+                                <option value="期中考" {{ 'selected' if exam and exam.exam_type == '期中考' }}>期中考</option>
+                                <option value="期末考" {{ 'selected' if exam and exam.exam_type == '期末考' }}>期末考</option>
+                                <option value="小考" {{ 'selected' if exam and exam.exam_type == '小考' }}>小考</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="content" class="form-label fw-medium">題目內容</label>
+                        <textarea class="form-control" id="content" name="content" rows="10" placeholder="請輸入考古題內容...">{{ exam.content if exam else '' }}</textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>{{ '更新' if exam else '新增' }}</button>
+                        <a href="{{ url_for('exams.list_exams') }}" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

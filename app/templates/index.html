@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}首頁 — 考古題收藏系統{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center py-5 mb-4 bg-light rounded-3 shadow-sm">
+    <h1 class="display-5 fw-bold text-primary">
+        <i class="bi bi-journal-bookmark-fill me-2"></i>考古題收藏系統
+    </h1>
+    <p class="lead text-muted mt-3">集中管理、分類明確、搜尋便利的大學考古題資料庫</p>
+    <div class="mt-4">
+        <a href="{{ url_for('exams.create_exam') }}" class="btn btn-primary btn-lg me-2">
+            <i class="bi bi-plus-circle me-1"></i>上傳考古題
+        </a>
+        <a href="{{ url_for('search.search') }}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-search me-1"></i>搜尋考古題
+        </a>
+    </div>
+</div>
+
+<!-- 統計卡片 -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-4">
+                <div class="display-4 text-primary mb-2">
+                    <i class="bi bi-book"></i>
+                </div>
+                <h2 class="display-6 fw-bold">{{ subject_count }}</h2>
+                <p class="text-muted mb-0">科目數量</p>
+                <a href="{{ url_for('subjects.list_subjects') }}" class="btn btn-sm btn-outline-primary mt-3">
+                    查看所有科目 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-4">
+                <div class="display-4 text-success mb-2">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <h2 class="display-6 fw-bold">{{ professor_count }}</h2>
+                <p class="text-muted mb-0">教授數量</p>
+                <a href="{{ url_for('professors.list_professors') }}" class="btn btn-sm btn-outline-success mt-3">
+                    查看所有教授 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center border-0 shadow-sm h-100">
+            <div class="card-body py-4">
+                <div class="display-4 text-warning mb-2">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <h2 class="display-6 fw-bold">{{ exam_count }}</h2>
+                <p class="text-muted mb-0">考古題數量</p>
+                <a href="{{ url_for('exams.list_exams') }}" class="btn btn-sm btn-outline-warning mt-3">
+                    查看所有考古題 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最新考古題 -->
+{% if recent_exams %}
+<div class="mb-4">
+    <h3 class="fw-bold mb-3">
+        <i class="bi bi-clock-history me-2"></i>最新上傳
+    </h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>標題</th>
+                    <th>科目</th>
+                    <th>教授</th>
+                    <th>學年度</th>
+                    <th>考試類型</th>
+                    <th>上傳時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in recent_exams %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('exams.detail_exam', id=exam.id) }}" class="text-decoration-none fw-medium">
+                            {{ exam.title }}
+                        </a>
+                    </td>
+                    <td><span class="badge bg-primary">{{ exam.subject_name }}</span></td>
+                    <td>{{ exam.professor_name }}</td>
+                    <td>{{ exam.year }}-{{ exam.semester }}</td>
+                    <td><span class="badge bg-secondary">{{ exam.exam_type }}</span></td>
+                    <td class="text-muted small">{{ exam.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

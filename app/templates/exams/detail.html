@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ exam.title }} — 考古題收藏系統{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('exams.list_exams') }}">考古題列表</a></li>
+        <li class="breadcrumb-item active">{{ exam.title }}</li>
+    </ol>
+</nav>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold"><i class="bi bi-file-earmark-text me-2"></i>{{ exam.title }}</h1>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('exams.edit_exam', id=exam.id) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil me-1"></i>編輯</a>
+        <form action="{{ url_for('exams.delete_exam', id=exam.id) }}" method="POST" onsubmit="return confirm('確定刪除？')">
+            <button type="submit" class="btn btn-outline-danger"><i class="bi bi-trash me-1"></i>刪除</button>
+        </form>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-primary fs-6">{{ exam.subject_name }}</span>
+            <span class="badge bg-success fs-6">{{ exam.professor_name }}</span>
+            <span class="badge bg-info fs-6">{{ exam.year }}-{{ exam.semester }}</span>
+            <span class="badge bg-secondary fs-6">{{ exam.exam_type }}</span>
+        </div>
+        <p class="text-muted small">
+            <i class="bi bi-clock me-1"></i>建立時間：{{ exam.created_at }}
+            {% if exam.updated_at != exam.created_at %}
+            | <i class="bi bi-pencil me-1"></i>更新時間：{{ exam.updated_at }}
+            {% endif %}
+        </p>
+    </div>
+</div>
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-light fw-bold"><i class="bi bi-card-text me-2"></i>題目內容</div>
+    <div class="card-body">
+        {% if exam.content %}
+        <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;">{{ exam.content }}</pre>
+        {% else %}
+        <p class="text-muted mb-0">（無內容）</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

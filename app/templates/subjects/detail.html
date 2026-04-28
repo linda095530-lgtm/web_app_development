@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ subject.name }} — 考古題收藏系統{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('subjects.list_subjects') }}">科目列表</a></li>
+        <li class="breadcrumb-item active">{{ subject.name }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold">
+        <i class="bi bi-book me-2"></i>{{ subject.name }}
+    </h1>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('subjects.edit_subject', id=subject.id) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-pencil me-1"></i>編輯
+        </a>
+        <form action="{{ url_for('subjects.delete_subject', id=subject.id) }}" method="POST"
+              onsubmit="return confirm('確定要刪除「{{ subject.name }}」嗎？')">
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>刪除
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if subject.description %}
+<p class="text-muted mb-4">{{ subject.description }}</p>
+{% endif %}
+
+<!-- 該科目的教授 -->
+{% if professors %}
+<div class="mb-4">
+    <h4 class="fw-bold"><i class="bi bi-person-badge me-2"></i>授課教授</h4>
+    <div class="d-flex flex-wrap gap-2 mt-2">
+        {% for professor in professors %}
+        <a href="{{ url_for('professors.detail_professor', id=professor.id) }}" class="badge bg-success text-decoration-none fs-6">
+            {{ professor.name }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- 該科目的考古題 -->
+<h4 class="fw-bold mb-3"><i class="bi bi-file-earmark-text me-2"></i>考古題列表</h4>
+
+{% if exams %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>標題</th>
+                <th>教授</th>
+                <th>學年度</th>
+                <th>考試類型</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for exam in exams %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('exams.detail_exam', id=exam.id) }}" class="text-decoration-none fw-medium">
+                        {{ exam.title }}
+                    </a>
+                </td>
+                <td>{{ exam.professor_name }}</td>
+                <td>{{ exam.year }}-{{ exam.semester }}</td>
+                <td><span class="badge bg-secondary">{{ exam.exam_type }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-4 text-muted">
+    <p>這個科目還沒有考古題</p>
+    <a href="{{ url_for('exams.create_exam') }}" class="btn btn-sm btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>新增考古題
+    </a>
+</div>
+{% endif %}
+{% endblock %}

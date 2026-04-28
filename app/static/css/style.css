@@ -1,0 +1,76 @@
+/* ============================================
+   考古題收藏系統 — 自訂樣式
+   ============================================ */
+
+/* 全域字型 */
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* 導覽列品牌 */
+.navbar-brand {
+    font-size: 1.25rem;
+}
+
+/* 卡片 hover 效果 */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 表格 hover 行 */
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Hero 區塊 */
+.bg-light.rounded-3 {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+}
+
+/* Badge 樣式微調 */
+.badge {
+    font-weight: 500;
+}
+
+/* Flash message 動畫 */
+.alert {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 頁尾 */
+footer {
+    font-size: 0.9rem;
+}
+
+/* 表單樣式 */
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* Pre 區塊樣式（題目內容） */
+pre {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+    line-height: 1.8;
+}

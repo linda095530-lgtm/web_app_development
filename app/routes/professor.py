@@ -2,70 +2,97 @@
 Professor Routes — 教授相關路由
 Blueprint 前綴：/professors
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, abort
+from app.models.professor import Professor
+from app.models.subject import Subject
+from app.models.exam import Exam
 
 professor_bp = Blueprint('professors', __name__, url_prefix='/professors')
 
 
 @professor_bp.route('/')
 def list_professors():
-    """
-    教授列表頁
-    GET /professors
-    - 呼叫 Professor.get_all() 取得所有教授（含所屬科目名稱與考古題數量）
-    - 模板：professors/list.html
-    """
-    pass
+    """教授列表頁"""
+    db_path = current_app.config['DATABASE']
+    professors = Professor.get_all(db_path)
+    return render_template('professors/list.html', professors=professors)
 
 
 @professor_bp.route('/create', methods=['GET', 'POST'])
 def create_professor():
-    """
-    新增教授
-    GET  /professors/create — 顯示空白表單（含科目下拉選單）
-    POST /professors/create — 接收表單並存入資料庫
-    - 表單欄位：name（必填）、subject_id（選填）
-    - 需呼叫 Subject.get_all() 取得科目選項
-    - 成功後重導向至 /professors
-    - 模板：professors/form.html
-    """
-    pass
+    """新增教授"""
+    db_path = current_app.config['DATABASE']
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        subject_id = request.form.get('subject_id', '').strip()
+
+        if not name:
+            flash('教授姓名為必填欄位！', 'error')
+            subjects = Subject.get_all(db_path)
+            return render_template('professors/form.html', professor=None, subjects=subjects)
+
+        subject_id = int(subject_id) if subject_id else None
+        Professor.create(db_path, name, subject_id)
+        flash('教授新增成功！', 'success')
+        return redirect(url_for('professors.list_professors'))
+
+    subjects = Subject.get_all(db_path)
+    return render_template('professors/form.html', professor=None, subjects=subjects)
 
 
 @professor_bp.route('/<int:id>')
 def detail_professor(id):
-    """
-    教授詳情頁
-    GET /professors/<id>
-    - 呼叫 Professor.get_by_id(id) 取得教授資料
-    - 呼叫 Exam.get_by_professor(id) 取得該教授考古題
-    - 教授不存在時回傳 404
-    - 模板：professors/detail.html
-    """
-    pass
+    """教授詳情頁"""
+    db_path = current_app.config['DATABASE']
+    professor = Professor.get_by_id(db_path, id)
+
+    if not professor:
+        abort(404)
+
+    exams = Exam.get_by_professor(db_path, id)
+
+    return render_template('professors/detail.html',
+                           professor=professor,
+                           exams=exams)
 
 
 @professor_bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 def edit_professor(id):
-    """
-    編輯教授
-    GET  /professors/<id>/edit — 顯示預填資料的編輯表單
-    POST /professors/<id>/edit — 接收表單並更新資料庫
-    - 表單欄位：name（必填）、subject_id（選填）
-    - 需呼叫 Subject.get_all() 取得科目選項
-    - 成功後重導向至 /professors/<id>
-    - 模板：professors/form.html（與新增共用）
-    """
-    pass
+    """編輯教授"""
+    db_path = current_app.config['DATABASE']
+    professor = Professor.get_by_id(db_path, id)
+
+    if not professor:
+        abort(404)
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        subject_id = request.form.get('subject_id', '').strip()
+
+        if not name:
+            flash('教授姓名為必填欄位！', 'error')
+            subjects = Subject.get_all(db_path)
+            return render_template('professors/form.html', professor=professor, subjects=subjects)
+
+        subject_id = int(subject_id) if subject_id else None
+        Professor.update(db_path, id, name, subject_id)
+        flash('教授資訊更新成功！', 'success')
+        return redirect(url_for('professors.detail_professor', id=id))
+
+    subjects = Subject.get_all(db_path)
+    return render_template('professors/form.html', professor=professor, subjects=subjects)
 
 
 @professor_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_professor(id):
-    """
-    刪除教授
-    POST /professors/<id>/delete
-    - 呼叫 Professor.delete(id)
-    - 成功後重導向至 /professors
-    - 教授不存在時回傳 404
-    """
-    pass
+    """刪除教授"""
+    db_path = current_app.config['DATABASE']
+    professor = Professor.get_by_id(db_path, id)
+
+    if not professor:
+        abort(404)
+
+    Professor.delete(db_path, id)
+    flash('教授已刪除！', 'success')
+    return redirect(url_for('professors.list_professors'))

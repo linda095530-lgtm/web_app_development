@@ -2,70 +2,93 @@
 Subject Routes — 科目相關路由
 Blueprint 前綴：/subjects
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, abort
+from app.models.subject import Subject
+from app.models.professor import Professor
+from app.models.exam import Exam
 
 subject_bp = Blueprint('subjects', __name__, url_prefix='/subjects')
 
 
 @subject_bp.route('/')
 def list_subjects():
-    """
-    科目列表頁
-    GET /subjects
-    - 呼叫 Subject.get_all() 取得所有科目（含考古題數量）
-    - 模板：subjects/list.html
-    """
-    pass
+    """科目列表頁"""
+    db_path = current_app.config['DATABASE']
+    subjects = Subject.get_all(db_path)
+    return render_template('subjects/list.html', subjects=subjects)
 
 
 @subject_bp.route('/create', methods=['GET', 'POST'])
 def create_subject():
-    """
-    新增科目
-    GET  /subjects/create — 顯示空白表單
-    POST /subjects/create — 接收表單並存入資料庫
-    - 表單欄位：name（必填）、description（選填）
-    - 驗證：name 不可為空
-    - 成功後重導向至 /subjects
-    - 模板：subjects/form.html
-    """
-    pass
+    """新增科目"""
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        description = request.form.get('description', '').strip()
+
+        # 驗證必填欄位
+        if not name:
+            flash('科目名稱為必填欄位！', 'error')
+            return render_template('subjects/form.html', subject=None)
+
+        db_path = current_app.config['DATABASE']
+        Subject.create(db_path, name, description)
+        flash('科目新增成功！', 'success')
+        return redirect(url_for('subjects.list_subjects'))
+
+    return render_template('subjects/form.html', subject=None)
 
 
 @subject_bp.route('/<int:id>')
 def detail_subject(id):
-    """
-    科目詳情頁
-    GET /subjects/<id>
-    - 呼叫 Subject.get_by_id(id) 取得科目資料
-    - 呼叫 Exam.get_by_subject(id) 取得該科目考古題
-    - 呼叫 Professor.get_by_subject(id) 取得該科目教授
-    - 科目不存在時回傳 404
-    - 模板：subjects/detail.html
-    """
-    pass
+    """科目詳情頁"""
+    db_path = current_app.config['DATABASE']
+    subject = Subject.get_by_id(db_path, id)
+
+    if not subject:
+        abort(404)
+
+    exams = Exam.get_by_subject(db_path, id)
+    professors = Professor.get_by_subject(db_path, id)
+
+    return render_template('subjects/detail.html',
+                           subject=subject,
+                           exams=exams,
+                           professors=professors)
 
 
 @subject_bp.route('/<int:id>/edit', methods=['GET', 'POST'])
 def edit_subject(id):
-    """
-    編輯科目
-    GET  /subjects/<id>/edit — 顯示預填資料的編輯表單
-    POST /subjects/<id>/edit — 接收表單並更新資料庫
-    - 表單欄位：name（必填）、description（選填）
-    - 成功後重導向至 /subjects/<id>
-    - 模板：subjects/form.html（與新增共用）
-    """
-    pass
+    """編輯科目"""
+    db_path = current_app.config['DATABASE']
+    subject = Subject.get_by_id(db_path, id)
+
+    if not subject:
+        abort(404)
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        description = request.form.get('description', '').strip()
+
+        if not name:
+            flash('科目名稱為必填欄位！', 'error')
+            return render_template('subjects/form.html', subject=subject)
+
+        Subject.update(db_path, id, name, description)
+        flash('科目更新成功！', 'success')
+        return redirect(url_for('subjects.detail_subject', id=id))
+
+    return render_template('subjects/form.html', subject=subject)
 
 
 @subject_bp.route('/<int:id>/delete', methods=['POST'])
 def delete_subject(id):
-    """
-    刪除科目
-    POST /subjects/<id>/delete
-    - 呼叫 Subject.delete(id)
-    - 成功後重導向至 /subjects
-    - 科目不存在時回傳 404
-    """
-    pass
+    """刪除科目"""
+    db_path = current_app.config['DATABASE']
+    subject = Subject.get_by_id(db_path, id)
+
+    if not subject:
+        abort(404)
+
+    Subject.delete(db_path, id)
+    flash('科目已刪除！', 'success')
+    return redirect(url_for('subjects.list_subjects'))
