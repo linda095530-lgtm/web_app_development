@@ -1,6 +1,9 @@
 # 考古題收藏系統
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
 這是一個集中管理、分類明確、搜尋便利的考古題資料庫，讓大學生能快速找到所需的歷屆試題，提升備考效率。
+
 
 ## 目錄
 
